@@ -5,37 +5,15 @@ import { Shield, Crosshair, Terminal, Bug, ArrowRight, Layers } from '../common/
 export const ResearchDomains = () => {
   const domains = [
     {
-      id: 'blue-team',
-      name: 'Blue Team',
-      categoryParam: 'Blue Team',
-      icon: Shield,
-      accentColor: 'blue',
-      description: 'Engineering resilient detection baselines, behavioral analytics, threat hunting playbooks, and digital forensics.',
-      disciplines: ['Threat Hunting', 'Detection Engineering', 'SOC Operations', 'DFIR Investigations'],
-      metrics: '14 Articles • 64 Sigma Rules',
-      highlightRule: 'Windows Event Logs, Sysmon, Zeek, Elastic & Splunk'
-    },
-    {
-      id: 'red-team',
-      name: 'Red Team',
+      id: 'vapt-appsec',
+      name: 'VAPT & AppSec',
       categoryParam: 'Red Team',
       icon: Terminal,
       accentColor: 'red',
-      description: 'Adversary emulation, Active Directory tradecraft, cloud privilege escalation, and evasion techniques.',
-      disciplines: ['Reconnaissance', 'Initial Access', 'Privilege Escalation', 'Adversary Emulation'],
-      metrics: '8 Articles • Cloud & AD',
-      highlightRule: 'Kerberos, AWS IAM Chaining, Lateral Movement'
-    },
-    {
-      id: 'purple-team',
-      name: 'Purple Team',
-      categoryParam: 'Purple Team',
-      icon: Layers,
-      accentColor: 'purple',
-      description: 'Closing offensive-defensive gaps through automated continuous validation and atomic simulation.',
-      disciplines: ['Attack Simulation', 'Detection Validation', 'Atomic Red Team', 'SOC AI Safeguards'],
-      metrics: '6 Articles • CI/CD Validation',
-      highlightRule: 'Atomic Tests, Caldera, Telemetry Scoring'
+      description: 'Black-box application security assessments, serverless database access controls, authentication bypasses, and IDOR testing.',
+      disciplines: ['Cloud DB Security', 'Firestore Security Rules', 'IDOR & Access Control', 'Automated Audit Suites'],
+      metrics: '4 Critical Findings • CVSS 9.8',
+      highlightRule: 'ailabsiet.dpdns.org, Firebase, Next.js App Router'
     },
     {
       id: 'threat-intel',
@@ -43,10 +21,32 @@ export const ResearchDomains = () => {
       categoryParam: 'Threat Intelligence',
       icon: Bug,
       accentColor: 'cyan',
-      description: 'Reverse engineering stealth implants, malware static/dynamic triage, campaign mapping, and IOC generation.',
-      disciplines: ['Malware Analysis', 'Threat Actors', 'Campaign Research', 'IOC Collections'],
-      metrics: '37 YARA Rules • Kernel/eBPF',
-      highlightRule: 'BPFdoor, Stealth Backdoors, FlareVM Labs'
+      description: 'Investigating active phishing lures, living-off-the-platform abuse, credential harvesting campaigns, and multi-engine telemetry correlation.',
+      disciplines: ['OSINT Telemetry', 'ZeroFox Abuse Tracking', 'Shodan Edge Scans', 'Incident Response (IR)'],
+      metrics: 'Report SEC-IR-2026-0827-01',
+      highlightRule: 'VirusTotal 1/92, Meta AS32934, igsi Campaign Tag'
+    },
+    {
+      id: 'digital-forensics',
+      name: 'Digital Forensics',
+      categoryParam: 'Blue Team',
+      icon: Shield,
+      accentColor: 'purple',
+      description: 'Binary header analysis, nested LSB steganography, spatial quadrant reconstruction, and JPEG MCU alignment manipulation.',
+      disciplines: ['Nested Stego Parsing', 'JPEG SOF0 Bounds', 'Bitplane LSB Stream', 'Nearest-Neighbor Scaling'],
+      metrics: 'TomCTF Solved • NumPy / Pillow',
+      highlightRule: 'Captain Levi, Dimensional Expansion, Broken Timeline'
+    },
+    {
+      id: 'reverse-engineering',
+      name: 'Protocol & Web Reversing',
+      categoryParam: 'Red Team',
+      icon: Layers,
+      accentColor: 'blue',
+      description: 'Reverse engineering proprietary IoT and sports kinematic telemetry interchange specifications, sensor stream fusion, and API exploit solvers.',
+      disciplines: ['Kinematic Spec Reversing', 'Sensor Fusion Audits', 'IMU Differential Math', 'Automated API Solvers'],
+      metrics: 'z0d1ak CTF Solved • Python 3',
+      highlightRule: 'FLOAT-VAR-3.1, Hydra FC Telemetry Gateway'
     }
   ];
 
