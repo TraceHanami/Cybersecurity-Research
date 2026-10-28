@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { generateRssXml } from '../utils/rssGenerator';
-import { researchArticles } from '../data/researchData';
+import { getCuratedArticles } from '../data/curation';
 import { Rss, Copy, Check, Download, ArrowRight, FileText } from '../components/common/Icons';
 import { Link } from 'react-router-dom';
 
 export const RssPage = () => {
+  const researchArticles = getCuratedArticles();
   const [copied, setCopied] = useState(false);
   const rssXml = generateRssXml();
 
@@ -68,18 +69,19 @@ export const RssPage = () => {
       {/* Feed Items Live Preview */}
       <div className="mb-12">
         <h2 className="text-lg font-bold text-white mb-4">
-          Feed Contents Preview ({researchArticles.length} publications)
+          Feed Contents Preview
         </h2>
         <div className="space-y-4">
           {researchArticles.map((art) => (
             <div
               key={art.id}
-              className="p-5 rounded-2xl bg-[#0e1424] border border-slate-800 flex flex-col justify-between"
+              className="p-5 rounded-2xl bg-background-secondary border border-slate-800 flex flex-col justify-between"
             >
               <div>
                 <div className="flex items-center justify-between text-xs font-mono text-slate-400 mb-2">
-                  <span className="text-amber-400">{art.category} • {art.subCategory}</span>
-                  <span>{art.date}</span>
+                  <span className="text-amber-400">{art.category}</span>
+                  {art.subCategory && <span>{art.subCategory}</span>}
+                  {art.date && <span>{art.date}</span>}
                 </div>
                 <h3 className="text-base font-bold text-white mb-2">
                   <Link to={`/research/${art.slug}`} className="hover:text-sky-300 transition-colors">
@@ -87,11 +89,11 @@ export const RssPage = () => {
                   </Link>
                 </h3>
                 <p className="text-xs text-slate-300 leading-relaxed mb-3">
-                  {art.executiveSummary}
+                  {art.executiveSummary || art.sections?.find(section => section.id === 'summary')?.paragraphs?.[0]}
                 </p>
               </div>
               <div className="pt-2 border-t border-slate-800 flex justify-between items-center text-xs font-mono">
-                <span className="text-slate-500">Author: TraceHanami</span>
+                {art.author?.name && <span className="text-slate-500">Author: {art.author.name}</span>}
                 <Link to={`/research/${art.slug}`} className="text-sky-400 hover:underline">
                   Read Article →
                 </Link>

@@ -1,14 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { researchArticles } from '../../data/researchData';
+import { getCuratedArticles } from '../../data/curation';
 import { Badge } from '../common/Badge';
 import { Clock, Calendar, ArrowRight, Shield, Crosshair, Terminal, FileText } from '../common/Icons';
 
 export const FeaturedResearch = () => {
-  const featured = researchArticles.filter(art => art.featured).slice(0, 4);
+  const featured = getCuratedArticles().filter(art => art.featured).slice(0, 4);
+  if (featured.length === 0) return null;
 
   return (
-    <section className="py-20 bg-[#070a12] border-b border-slate-800/60">
+    <section className="py-20 bg-background border-b border-slate-800/60">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
@@ -22,17 +23,10 @@ export const FeaturedResearch = () => {
               Featured Research
             </h2>
           </div>
-          <Link
-            to="/research"
-            className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium text-sky-400 hover:text-sky-300 transition-colors mt-3 md:mt-0 group"
-          >
-            <span>View all 28+ publications</span>
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </Link>
         </div>
 
         {/* Featured Articles Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="max-w-4xl divide-y divide-slate-800 border-y border-slate-800">
           {featured.map((art) => {
             const categoryVariant = 
               art.category === 'Blue Team' ? 'blue' :
@@ -42,7 +36,7 @@ export const FeaturedResearch = () => {
             return (
               <article
                 key={art.id}
-                className="group relative flex flex-col justify-between p-7 rounded-2xl bg-[#0e1424]/90 border border-slate-800/90 hover:border-sky-500/40 transition-all duration-300 hover:shadow-2xl hover:shadow-sky-500/5 hover:-translate-y-1"
+                className="group flex flex-col justify-between py-7"
               >
                 <div>
                   {/* Category & Meta */}
@@ -76,7 +70,7 @@ export const FeaturedResearch = () => {
                   </h3>
 
                   {/* Executive Summary Snippet */}
-                  <p className="text-sm text-slate-300 leading-relaxed line-clamp-3 mb-6">
+                  <p className="text-sm text-slate-300 leading-relaxed mb-6">
                     {art.executiveSummary}
                   </p>
                 </div>
@@ -94,8 +88,8 @@ export const FeaturedResearch = () => {
                           className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-mono bg-sky-950/40 text-sky-300 border border-sky-500/20"
                           title={m.name}
                         >
-                          <span className="font-semibold mr-1">{m.id}</span>
-                          <span className="text-slate-400 hidden sm:inline truncate max-w-[120px]">{m.name}</span>
+                          <span className="mitre-technique-id font-semibold mr-1">{m.id}</span>
+                          <span className="text-slate-400 hidden sm:inline">{m.name}</span>
                         </span>
                       ))}
                     </div>

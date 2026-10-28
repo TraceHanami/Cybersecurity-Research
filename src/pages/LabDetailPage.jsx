@@ -1,15 +1,12 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { labsData } from '../data/labsData';
+import { getCuratedLabs } from '../data/curation';
 import { Server, ArrowLeft, Shield, Cpu, Activity, CheckCircle, Crosshair, ArrowRight } from '../components/common/Icons';
 
 export const LabDetailPage = () => {
+  const labsData = getCuratedLabs();
   const { slug } = useParams();
-  const lab = labsData.find(l => l.slug === slug) || labsData[0];
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [slug]);
+  const lab = labsData.find(l => l.slug === slug);
 
   if (!lab) {
     return (
@@ -67,7 +64,7 @@ export const LabDetailPage = () => {
         <div className="lg:col-span-7 space-y-8">
           
           {/* Architecture Topology Panel */}
-          <div className="p-6 rounded-2xl bg-[#0e1424] border border-slate-800 shadow-xl">
+          <div className="p-6 rounded-2xl bg-background-secondary border border-slate-800 shadow-xl">
             <div className="flex items-center gap-2 mb-4">
               <Server className="w-5 h-5 text-emerald-400" />
               <h2 className="text-xl font-bold text-white">
@@ -79,7 +76,7 @@ export const LabDetailPage = () => {
               {Object.entries(lab.architecture).map(([key, val]) => (
                 <div key={key} className="p-3.5 rounded-lg bg-slate-900/90 border border-slate-800">
                   <div className="text-sky-400 uppercase tracking-wider text-[11px] mb-1.5 font-semibold">
-                    {key.replace(/([A-Z])/g, ' $1').trim()}
+                    {key}
                   </div>
                   {Array.isArray(val) ? (
                     <ul className="space-y-1 text-slate-300">
@@ -98,7 +95,7 @@ export const LabDetailPage = () => {
           </div>
 
           {/* Key Findings */}
-          <div className="p-6 rounded-2xl bg-[#0e1424] border border-slate-800 shadow-xl">
+          <div className="p-6 rounded-2xl bg-background-secondary border border-slate-800 shadow-xl">
             <div className="flex items-center gap-2 mb-4">
               <CheckCircle className="w-5 h-5 text-sky-400" />
               <h2 className="text-xl font-bold text-white">
@@ -107,9 +104,8 @@ export const LabDetailPage = () => {
             </div>
             <div className="space-y-3">
               {lab.researchFindings.map((finding, idx) => (
-                <div key={idx} className="p-4 rounded-xl bg-slate-900/80 border border-slate-800/80 text-xs sm:text-sm text-slate-200 leading-relaxed flex items-start gap-3">
-                  <span className="font-mono text-sky-400 font-bold mt-0.5">0{idx + 1}.</span>
-                  <span>{finding}</span>
+                <div key={idx} className="p-4 rounded-xl bg-slate-900/80 border border-slate-800/80 text-xs sm:text-sm text-slate-200 leading-relaxed">
+                  {finding}
                 </div>
               ))}
             </div>
@@ -121,7 +117,7 @@ export const LabDetailPage = () => {
         <div className="lg:col-span-5 space-y-8">
           
           {/* Tech Stack */}
-          <div className="p-6 rounded-2xl bg-[#0e1424] border border-slate-800 shadow-xl">
+          <div className="p-6 rounded-2xl bg-background-secondary border border-slate-800 shadow-xl">
             <h2 className="text-lg font-bold text-white mb-4">
               Technologies & Tooling
             </h2>
@@ -138,7 +134,7 @@ export const LabDetailPage = () => {
           </div>
 
           {/* Detection Opportunities */}
-          <div className="p-6 rounded-2xl bg-[#0e1424] border border-slate-800 shadow-xl">
+          <div className="p-6 rounded-2xl bg-background-secondary border border-slate-800 shadow-xl">
             <div className="flex items-center gap-2 mb-4">
               <Crosshair className="w-5 h-5 text-purple-400" />
               <h2 className="text-lg font-bold text-white">
@@ -161,7 +157,7 @@ export const LabDetailPage = () => {
           </div>
 
           {/* Link to Research CTA */}
-          <div className="p-6 rounded-2xl bg-gradient-to-br from-sky-950/40 to-purple-950/40 border border-sky-500/30">
+          <div className="p-6 rounded-md bg-background-secondary border border-slate-800">
             <h3 className="text-base font-bold text-white mb-2">
               Related Research Publications
             </h3>

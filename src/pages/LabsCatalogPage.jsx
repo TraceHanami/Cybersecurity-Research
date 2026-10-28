@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { labsData } from '../data/labsData';
+import { getCuratedLabs } from '../data/curation';
 import { Server, ArrowRight, Shield, Cpu, Activity, Check, Filter } from '../components/common/Icons';
 
 export const LabsCatalogPage = () => {
+  const labsData = getCuratedLabs();
   const [selectedFilter, setSelectedFilter] = useState('All');
+  if (labsData.length === 0) return null;
 
   const filteredLabs = labsData.filter(lab => {
     if (selectedFilter === 'All') return true;
@@ -30,7 +32,7 @@ export const LabsCatalogPage = () => {
 
       {/* Filter Tabs */}
       <div className="flex items-center gap-2 mb-8 overflow-x-auto pb-2">
-        {['All', 'Active Directory', 'SOC Lab', 'Malware Analysis', 'Cloud Security', 'Purple Team'].map(filter => (
+        {['All', ...new Set(labsData.map(lab => lab.category))].map(filter => (
           <button
             key={filter}
             onClick={() => setSelectedFilter(filter)}
@@ -46,17 +48,16 @@ export const LabsCatalogPage = () => {
       </div>
 
       {/* Labs Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="max-w-4xl divide-y divide-slate-800 border-y border-slate-800">
         {filteredLabs.map((lab) => (
           <div
             key={lab.id}
-            className="flex flex-col justify-between p-7 rounded-2xl bg-[#0e1424]/90 border border-slate-800/90 hover:border-emerald-500/40 transition-all duration-300 shadow-xl group"
+            className="flex flex-col justify-between py-7 group"
           >
             <div>
               {/* Top Meta */}
               <div className="flex items-center justify-between gap-2 mb-4">
-                <span className="text-xs font-mono text-emerald-400 bg-emerald-950/40 px-2.5 py-1 rounded-full border border-emerald-500/30 flex items-center gap-1.5 font-medium">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span className="text-xs font-mono text-slate-400 font-medium">
                   {lab.status}
                 </span>
                 <div className="text-xs font-mono text-slate-400">

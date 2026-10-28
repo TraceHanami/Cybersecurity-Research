@@ -23,7 +23,7 @@ export const Badge = ({
     cyan: "bg-cyan-500/10 text-cyan-400 border-cyan-500/30 hover:border-cyan-400/50",
     emerald: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:border-emerald-400/50",
     amber: "bg-amber-500/10 text-amber-400 border-amber-500/30 hover:border-amber-400/50",
-    mitre: "bg-[#141b2d] text-sky-300 border-sky-500/20 font-mono tracking-tight text-[11px] hover:border-sky-400/40",
+    mitre: "bg-background-code text-sky-300 border-sky-500/20 font-mono tracking-tight text-[11px] hover:border-sky-400/40",
     tactics: "bg-purple-950/40 text-purple-300 border-purple-500/25 font-mono text-[11px]",
   };
 

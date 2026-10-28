@@ -1,11 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { labsData } from '../../data/labsData';
+import { getCuratedLabs } from '../../data/curation';
 import { Server, ArrowRight, Shield, Cpu, Activity, Check } from '../common/Icons';
 
 export const LabsShowcase = () => {
+  const labsData = getCuratedLabs();
+  if (labsData.length === 0) return null;
   return (
-    <section className="py-20 bg-[#070a12] border-b border-slate-800/60">
+    <section className="py-20 bg-background border-b border-slate-800/60">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
@@ -29,17 +31,16 @@ export const LabsShowcase = () => {
         </div>
 
         {/* Labs Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="max-w-4xl divide-y divide-slate-800 border-y border-slate-800">
           {labsData.map((lab) => (
             <div
               key={lab.id}
-              className="flex flex-col justify-between p-6 rounded-2xl bg-[#0e1424]/90 border border-slate-800/90 hover:border-emerald-500/40 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group"
+              className="flex flex-col justify-between py-7 group"
             >
               <div>
                 {/* Top Badge */}
                 <div className="flex items-center justify-between gap-2 mb-4">
-                  <span className="text-[11px] font-mono text-emerald-400 bg-emerald-950/40 px-2.5 py-1 rounded-full border border-emerald-500/30 flex items-center gap-1.5 font-medium">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                  <span className="text-[11px] font-mono text-slate-400 font-medium">
                     {lab.status}
                   </span>
                   <span className="text-[11px] font-mono text-slate-500">
@@ -55,7 +56,7 @@ export const LabsShowcase = () => {
                 </h3>
 
                 {/* Summary */}
-                <p className="text-xs text-slate-300 leading-relaxed line-clamp-3 mb-4">
+                <p className="text-xs text-slate-300 leading-relaxed mb-4">
                   {lab.summary}
                 </p>
 
@@ -65,7 +66,7 @@ export const LabsShowcase = () => {
                     Core Technologies
                   </div>
                   <div className="flex flex-wrap gap-1.5">
-                    {lab.technologies.slice(0, 4).map((tech, i) => (
+                    {lab.technologies.map((tech, i) => (
                       <span
                         key={i}
                         className="text-[10px] font-mono text-slate-300 bg-slate-900/90 px-2 py-0.5 rounded border border-slate-800"
@@ -73,22 +74,19 @@ export const LabsShowcase = () => {
                         {tech}
                       </span>
                     ))}
-                    {lab.technologies.length > 4 && (
-                      <span className="text-[10px] font-mono text-slate-500 px-1 py-0.5">
-                        +{lab.technologies.length - 4} more
-                      </span>
-                    )}
                   </div>
                 </div>
 
                 {/* Key Research Finding */}
-                <div className="p-3 rounded-lg bg-slate-900/80 border border-slate-800/80 mb-5">
+                <div className="py-3 border-y border-slate-800 mb-5">
                   <div className="text-[10px] font-mono text-sky-400 uppercase tracking-wider mb-1 font-semibold">
                     Key Lab Finding:
                   </div>
-                  <p className="text-[11px] text-slate-300 leading-normal line-clamp-2">
-                    {lab.researchFindings[0]}
-                  </p>
+                  <div className="space-y-2 text-[11px] text-slate-300 leading-normal">
+                    {lab.researchFindings.map((finding, index) => (
+                      <p key={index}>{finding}</p>
+                    ))}
+                  </div>
                 </div>
               </div>
 

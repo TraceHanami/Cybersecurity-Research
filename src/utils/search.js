@@ -1,25 +1,42 @@
-import { researchArticles } from '../data/researchData';
-import { labsData } from '../data/labsData';
-import { mitreTactics } from '../data/mitreData';
+import { getCuratedArticles, getCuratedLabs, getCuratedMitreTactics } from '../data/curation';
 
 export function searchAll(query) {
   if (!query || !query.trim()) return { articles: [], labs: [], mitre: [] };
 
   const q = query.toLowerCase().trim();
 
-  const articles = researchArticles.filter(art => {
-    const matchTitle = art.title.toLowerCase().includes(q);
-    const matchSub = art.subtitle.toLowerCase().includes(q);
-    const matchSummary = art.executiveSummary.toLowerCase().includes(q);
-    const matchTags = art.tags.some(t => t.toLowerCase().includes(q));
-    const matchMitre = art.mitreTags.some(m => m.id.toLowerCase().includes(q) || m.name.toLowerCase().includes(q));
-    const matchSigma = art.sigmaRule && art.sigmaRule.toLowerCase().includes(q);
-    const matchCategory = art.category.toLowerCase().includes(q) || art.subCategory.toLowerCase().includes(q);
+  const articles = getCuratedArticles().filter(art => {
+    const sections = (art.sections || []).flatMap(section => [
+      section.title,
+      ...(section.paragraphs || []),
+      ...(section.items || []),
+      section.content,
+    ]).filter(Boolean);
+    const searchable = [
+      art.title,
+      art.subtitle,
+      art.executiveSummary,
+      art.category,
+      art.subCategory,
+      art.advisoryId,
+      art.packageName,
+      art.affected,
+      art.patched,
+      art.severity,
+      art.cve,
+      art.credit,
+      art.headerNote,
+      ...(art.tags || []),
+      ...(art.weaknesses || []),
+      ...sections,
+      ...(art.mitreTags || []).flatMap(mapping => [mapping.id, mapping.name]),
+      art.sigmaRule,
+    ].filter(Boolean).join(' ').toLowerCase();
 
-    return matchTitle || matchSub || matchSummary || matchTags || matchMitre || matchSigma || matchCategory;
+    return searchable.includes(q);
   });
 
-  const labs = labsData.filter(lab => {
+  const labs = getCuratedLabs().filter(lab => {
     const matchTitle = lab.title.toLowerCase().includes(q);
     const matchSummary = lab.summary.toLowerCase().includes(q);
     const matchTech = lab.technologies.some(t => t.toLowerCase().includes(q));
@@ -29,7 +46,7 @@ export function searchAll(query) {
   });
 
   const mitre = [];
-  mitreTactics.forEach(tactic => {
+  getCuratedMitreTactics().forEach(tactic => {
     const matchTactic = tactic.name.toLowerCase().includes(q) || tactic.id.toLowerCase().includes(q);
     tactic.techniques.forEach(tech => {
       const matchTech = tech.id.toLowerCase().includes(q) || tech.name.toLowerCase().includes(q) || tech.subtechniques.some(st => st.toLowerCase().includes(q));
@@ -49,6 +66,6 @@ export function searchAll(query) {
   return {
     articles,
     labs,
-    mitre: mitre.slice(0, 8)
+    mitre
   };
 }

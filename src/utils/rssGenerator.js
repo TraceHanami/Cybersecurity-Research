@@ -1,18 +1,30 @@
-import { researchArticles } from '../data/researchData';
+import { getCuratedArticles } from '../data/curation';
 
 export function generateRssXml() {
   const baseUrl = 'https://tracehanami.sec';
-  const pubDate = new Date().toUTCString();
 
-  const items = researchArticles.map(art => {
+  const items = getCuratedArticles().map(art => {
+    const description = art.executiveSummary
+      || art.sections?.find(section => section.id === 'summary')?.paragraphs?.join('\n\n')
+      || '';
+    const optionalFields = [
+      art.date ? `<pubDate>${art.date}</pubDate>` : null,
+      art.author?.name ? `<author>research@tracehanami.sec (${art.author.name})</author>` : null,
+    ].filter(Boolean).join('\n      ');
+    const categories = (art.tags || []).length
+      ? art.tags
+      : [art.category, art.subCategory].filter(Boolean);
+    const categoryElements = categories
+      .map(category => `<category><![CDATA[${category}]]></category>`)
+      .join('\n      ');
+
     return `    <item>
       <title><![CDATA[${art.title}]]></title>
       <link>${baseUrl}/research/${art.slug}</link>
       <guid isPermaLink="true">${baseUrl}/research/${art.slug}</guid>
-      <pubDate>${new Date(art.date).toUTCString()}</pubDate>
-      <author>research@tracehanami.sec (${art.author.name})</author>
-      <category><![CDATA[${art.category} - ${art.subCategory}]]></category>
-      <description><![CDATA[${art.executiveSummary}]]></description>
+      ${optionalFields}
+      ${categoryElements}
+      <description><![CDATA[${description}]]></description>
     </item>`;
   }).join('\n');
 
@@ -23,7 +35,6 @@ export function generateRssXml() {
     <link>${baseUrl}</link>
     <description>Cybersecurity research journal, threat hunting methodologies, detection engineering experiments, red team techniques, and DFIR investigations.</description>
     <language>en-us</language>
-    <lastBuildDate>${pubDate}</lastBuildDate>
     <atom:link href="${baseUrl}/rss.xml" rel="self" type="application/rss+xml"/>
 ${items}
   </channel>

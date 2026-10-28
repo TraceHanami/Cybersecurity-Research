@@ -1,11 +1,13 @@
 import React from 'react';
-import { kanbanData } from '../../data/kanbanData';
+import { getCuratedKanbanData } from '../../data/curation';
 import { Kanban, ArrowRight, CheckCircle, Clock, FileText } from '../common/Icons';
 import { Link } from 'react-router-dom';
 
 export const CurrentResearchKanban = () => {
+  const kanbanData = getCuratedKanbanData();
+  if (Object.values(kanbanData).every(items => items.length === 0)) return null;
   return (
-    <section className="py-20 bg-[#070a12] border-b border-slate-800/60">
+    <section className="py-20 bg-background border-b border-slate-800/60">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
@@ -28,12 +30,12 @@ export const CurrentResearchKanban = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           
           {/* Column 1: Researching */}
-          <div className="flex flex-col rounded-xl bg-[#0b101d] border border-sky-500/20 p-5 shadow-lg">
+          <div className="flex flex-col rounded-xl bg-background-code border border-sky-500/20 p-5 shadow-lg">
             <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-800">
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-sky-400 animate-pulse"></span>
                 <h3 className="font-semibold text-sm text-sky-300 uppercase tracking-wider font-mono">
-                  1. Researching ({kanbanData.researching.length})
+                  1. Researching
                 </h3>
               </div>
               <span className="text-[11px] font-mono text-slate-500">Lab Experiments</span>
@@ -43,7 +45,7 @@ export const CurrentResearchKanban = () => {
               {kanbanData.researching.map((item) => (
                 <div
                   key={item.id}
-                  className="p-4 rounded-lg bg-[#0f172a]/90 border border-slate-800/80 hover:border-sky-500/40 transition-colors shadow-sm"
+                  className="p-4 rounded-lg bg-background-code/90 border border-slate-800/80 hover:border-sky-500/40 transition-colors shadow-sm"
                 >
                   <div className="flex items-center justify-between gap-2 mb-2">
                     <span className="text-[10px] font-mono text-sky-400 bg-sky-950/50 px-2 py-0.5 rounded border border-sky-500/30">
@@ -58,7 +60,7 @@ export const CurrentResearchKanban = () => {
                     {item.title}
                   </h4>
 
-                  <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed mb-3">
+                  <p className="text-xs text-slate-400 leading-relaxed mb-3">
                     {item.description}
                   </p>
 
@@ -78,12 +80,12 @@ export const CurrentResearchKanban = () => {
           </div>
 
           {/* Column 2: Writing */}
-          <div className="flex flex-col rounded-xl bg-[#0b101d] border border-purple-500/20 p-5 shadow-lg">
+          <div className="flex flex-col rounded-xl bg-background-code border border-purple-500/20 p-5 shadow-lg">
             <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-800">
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-purple-400"></span>
                 <h3 className="font-semibold text-sm text-purple-300 uppercase tracking-wider font-mono">
-                  2. Writing & Rule Crafting ({kanbanData.writing.length})
+                  2. Writing & Rule Crafting
                 </h3>
               </div>
               <span className="text-[11px] font-mono text-slate-500">Drafting Reports</span>
@@ -93,7 +95,7 @@ export const CurrentResearchKanban = () => {
               {kanbanData.writing.map((item) => (
                 <div
                   key={item.id}
-                  className="p-4 rounded-lg bg-[#0f172a]/90 border border-slate-800/80 hover:border-purple-500/40 transition-colors shadow-sm"
+                  className="p-4 rounded-lg bg-background-code/90 border border-slate-800/80 hover:border-purple-500/40 transition-colors shadow-sm"
                 >
                   <div className="flex items-center justify-between gap-2 mb-2">
                     <span className="text-[10px] font-mono text-purple-400 bg-purple-950/50 px-2 py-0.5 rounded border border-purple-500/30">
@@ -108,7 +110,7 @@ export const CurrentResearchKanban = () => {
                     {item.title}
                   </h4>
 
-                  <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed mb-3">
+                  <p className="text-xs text-slate-400 leading-relaxed mb-3">
                     {item.description}
                   </p>
 
@@ -128,12 +130,12 @@ export const CurrentResearchKanban = () => {
           </div>
 
           {/* Column 3: Published */}
-          <div className="flex flex-col rounded-xl bg-[#0b101d] border border-emerald-500/20 p-5 shadow-lg">
+          <div className="flex flex-col rounded-xl bg-background-code border border-emerald-500/20 p-5 shadow-lg">
             <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-800">
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
                 <h3 className="font-semibold text-sm text-emerald-300 uppercase tracking-wider font-mono">
-                  3. Published ({kanbanData.published.length})
+                  3. Published
                 </h3>
               </div>
               <span className="text-[11px] font-mono text-slate-500">Live Research</span>
@@ -144,7 +146,7 @@ export const CurrentResearchKanban = () => {
                 <Link
                   key={item.id}
                   to={`/research/${item.slug}`}
-                  className="block p-4 rounded-lg bg-[#0f172a]/90 border border-slate-800/80 hover:border-emerald-500/50 transition-all hover:-translate-y-0.5 group shadow-sm"
+                  className="block p-4 rounded-lg bg-background-code/90 border border-slate-800/80 hover:border-emerald-500/50 transition-all hover:-translate-y-0.5 group shadow-sm"
                 >
                   <div className="flex items-center justify-between gap-2 mb-2">
                     <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/50 px-2 py-0.5 rounded border border-emerald-500/30 flex items-center gap-1">
@@ -159,7 +161,7 @@ export const CurrentResearchKanban = () => {
                     {item.title}
                   </h4>
 
-                  <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed mb-3">
+                  <p className="text-xs text-slate-400 leading-relaxed mb-3">
                     {item.description}
                   </p>
 

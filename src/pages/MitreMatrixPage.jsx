@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { mitreTactics } from '../data/mitreData';
+import { getCuratedMitreTactics } from '../data/curation';
 import { Crosshair, ArrowRight, Shield, Check, Search, FileText } from '../components/common/Icons';
 
 export const MitreMatrixPage = () => {
+  const mitreTactics = getCuratedMitreTactics();
   const [searchParams] = useSearchParams();
   const initialTacticSlug = searchParams.get('tactic');
   
@@ -15,6 +16,7 @@ export const MitreMatrixPage = () => {
   });
 
   const [searchQuery, setSearchQuery] = useState('');
+  if (mitreTactics.length === 0) return null;
 
   // Filter techniques across matrix
   const filteredTactics = mitreTactics.map(tactic => {
@@ -80,16 +82,18 @@ export const MitreMatrixPage = () => {
                 className={`p-3 rounded-xl text-left border transition-all font-mono ${
                   isSelected
                     ? 'bg-sky-500/15 border-sky-400/60 text-white shadow-lg'
-                    : 'bg-[#0e1424]/80 border-slate-800/80 hover:border-slate-700 text-slate-300'
+                    : 'bg-background-secondary/80 border-slate-800/80 hover:border-slate-700 text-slate-300'
                 }`}
               >
                 <div className="flex items-center justify-between text-[10px] text-slate-500 mb-1">
                   <span>{tactic.id}</span>
-                  <span className={isSelected ? 'text-sky-400 font-bold' : 'text-slate-400'}>
-                    {tactic.coveragePercent}%
-                  </span>
+                  {tactic.coveragePercent !== undefined && (
+                    <span className={isSelected ? 'text-sky-400 font-bold' : 'text-slate-400'}>
+                      {tactic.coveragePercent}%
+                    </span>
+                  )}
                 </div>
-                <div className="text-xs font-semibold truncate">
+                <div className="text-xs font-semibold">
                   {tactic.name}
                 </div>
               </button>
@@ -100,16 +104,18 @@ export const MitreMatrixPage = () => {
 
       {/* Selected Tactic Deep-Dive Showcase */}
       {selectedTactic && (
-        <div className="p-6 sm:p-8 rounded-2xl bg-[#0b101c] border border-sky-500/30 shadow-2xl mb-12">
+        <div className="p-6 sm:p-8 rounded-2xl bg-background-code border border-sky-500/30 shadow-2xl mb-12">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-800">
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-xs font-mono text-sky-400 bg-sky-950/60 px-2 py-0.5 rounded border border-sky-500/30">
                   {selectedTactic.id}
                 </span>
-                <span className="text-xs font-mono text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-500/30">
-                  {selectedTactic.coveragePercent}% Detection Rate
-                </span>
+                {selectedTactic.coveragePercent !== undefined && (
+                  <span className="text-xs font-mono text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-500/30">
+                    {selectedTactic.coveragePercent}% Detection Rate
+                  </span>
+                )}
               </div>
               <h2 className="text-2xl font-bold text-white mb-1">
                 {selectedTactic.name}
@@ -124,10 +130,10 @@ export const MitreMatrixPage = () => {
             {selectedTactic.techniques.map((tech) => (
               <div
                 key={tech.id}
-                className="p-4 rounded-xl bg-[#0e1424] border border-slate-800 hover:border-sky-500/40 transition-colors"
+                className="p-4 rounded-xl bg-background-secondary border border-slate-800 hover:border-sky-500/40 transition-colors"
               >
                 <div className="flex items-center justify-between gap-2 mb-2">
-                  <span className="text-xs font-mono font-bold text-sky-400">
+                  <span className="mitre-technique-id text-xs font-mono font-bold">
                     {tech.id}
                   </span>
                   <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-500/20">
@@ -143,7 +149,7 @@ export const MitreMatrixPage = () => {
                   {tech.subtechniques.map((sub, i) => (
                     <div key={i} className="text-[11px] font-mono text-slate-400 flex items-center gap-1.5">
                       <span className="text-slate-600">↳</span>
-                      <span className="truncate">{sub}</span>
+                      <span>{sub}</span>
                     </div>
                   ))}
                 </div>
@@ -176,12 +182,12 @@ export const MitreMatrixPage = () => {
           {filteredTactics.map((tactic) => (
             <div
               key={tactic.id}
-              className="p-5 rounded-xl bg-[#0e1424] border border-slate-800 flex flex-col justify-between"
+              className="p-5 rounded-xl bg-background-secondary border border-slate-800 flex flex-col justify-between"
             >
               <div>
                 <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-800 text-xs font-mono">
                   <span className="text-sky-400 font-semibold">{tactic.id} • {tactic.name}</span>
-                  <span className="text-slate-400">{tactic.coveragePercent}%</span>
+                  {tactic.coveragePercent !== undefined && <span className="text-slate-400">{tactic.coveragePercent}%</span>}
                 </div>
                 <div className="space-y-2 mb-4">
                   {tactic.techniques.map((tech) => (
@@ -198,7 +204,6 @@ export const MitreMatrixPage = () => {
               <button
                 onClick={() => {
                   setSelectedTactic(tactic);
-                  window.scrollTo({ top: 200, behavior: 'smooth' });
                 }}
                 className="text-xs text-sky-400 hover:text-sky-300 font-semibold text-left pt-2 border-t border-slate-800"
               >

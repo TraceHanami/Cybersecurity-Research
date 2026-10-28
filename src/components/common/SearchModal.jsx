@@ -61,11 +61,11 @@ export const SearchModal = ({ isOpen, onClose }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-16 sm:pt-24 px-4 bg-black/75 backdrop-blur-sm animate-fadeIn">
       <div 
-        className="relative w-full max-w-2xl bg-[#0e1424] border border-slate-700/80 rounded-xl shadow-2xl overflow-hidden"
+        className="relative w-full max-w-2xl bg-background-secondary border border-slate-700/80 rounded-xl shadow-2xl overflow-hidden"
         onKeyDown={handleKeyDown}
       >
         {/* Search Input Bar */}
-        <div className="flex items-center px-4 py-3.5 border-b border-slate-800 bg-[#121a2f]">
+        <div className="flex items-center px-4 py-3.5 border-b border-slate-800 bg-background-secondary">
           <Search className="w-5 h-5 text-sky-400 mr-3 flex-shrink-0" />
           <input
             ref={inputRef}
@@ -118,7 +118,7 @@ export const SearchModal = ({ isOpen, onClose }) => {
               {results.articles.length > 0 && (
                 <div className="py-2">
                   <div className="text-[11px] font-mono font-semibold uppercase tracking-wider text-slate-500 px-3 py-1">
-                    Research Publications ({results.articles.length})
+                    Research Publications
                   </div>
                   {results.articles.map((art, i) => {
                     const isSelected = allItems[selectedIndex]?.item?.id === art.id;
@@ -136,14 +136,16 @@ export const SearchModal = ({ isOpen, onClose }) => {
                         <div className="flex items-start gap-3 min-w-0">
                           <FileText className={`w-4 h-4 mt-0.5 flex-shrink-0 ${isSelected ? 'text-sky-400' : 'text-slate-500'}`} />
                           <div className="min-w-0">
-                            <h4 className="text-sm font-semibold text-slate-100 truncate">{art.title}</h4>
-                            <p className="text-xs text-slate-400 line-clamp-1 mt-0.5">{art.subtitle}</p>
+                            <h4 className="text-sm font-semibold text-slate-100">{art.title}</h4>
+                            <p className="text-xs text-slate-400 mt-0.5">
+                              {art.subtitle || art.sections?.find(section => section.id === 'summary')?.paragraphs?.[0]}
+                            </p>
                             <div className="flex items-center gap-2 mt-1.5 flex-wrap">
                               <Badge size="xs" variant={art.category === 'Blue Team' ? 'blue' : art.category === 'Red Team' ? 'red' : 'purple'}>
                                 {art.category}
                               </Badge>
-                              {art.mitreTags.slice(0, 2).map(m => (
-                                <span key={m.id} className="text-[10px] font-mono text-sky-400 bg-sky-950/40 px-1.5 py-0.5 rounded border border-sky-500/20">
+                              {(art.mitreTags || []).map(m => (
+                                <span key={m.id} className="mitre-technique-id text-[10px] font-mono bg-sky-950/40 px-1.5 py-0.5 rounded border border-sky-500/20">
                                   {m.id}
                                 </span>
                               ))}
@@ -161,7 +163,7 @@ export const SearchModal = ({ isOpen, onClose }) => {
               {results.labs.length > 0 && (
                 <div className="py-2">
                   <div className="text-[11px] font-mono font-semibold uppercase tracking-wider text-slate-500 px-3 py-1">
-                    Telemetry & Research Labs ({results.labs.length})
+                    Telemetry & Research Labs
                   </div>
                   {results.labs.map(lab => (
                     <div
@@ -176,7 +178,7 @@ export const SearchModal = ({ isOpen, onClose }) => {
                         <Server className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" />
                         <div className="min-w-0">
                           <h4 className="text-sm font-semibold text-slate-100">{lab.title}</h4>
-                          <p className="text-xs text-slate-400 line-clamp-1 mt-0.5">{lab.summary}</p>
+                          <p className="text-xs text-slate-400 mt-0.5">{lab.summary}</p>
                         </div>
                       </div>
                       <ArrowRight className="w-4 h-4 text-slate-500 ml-2 mt-1 flex-shrink-0" />
@@ -189,7 +191,7 @@ export const SearchModal = ({ isOpen, onClose }) => {
               {results.mitre.length > 0 && (
                 <div className="py-2">
                   <div className="text-[11px] font-mono font-semibold uppercase tracking-wider text-slate-500 px-3 py-1">
-                    MITRE ATT&CK Matrix ({results.mitre.length})
+                    MITRE ATT&CK Matrix
                   </div>
                   {results.mitre.map(m => (
                     <div
@@ -206,10 +208,10 @@ export const SearchModal = ({ isOpen, onClose }) => {
                     >
                       <div className="flex items-center gap-2.5 min-w-0">
                         <Crosshair className="w-4 h-4 text-purple-400 flex-shrink-0" />
-                        <span className="font-mono text-xs text-sky-400 bg-sky-950/40 px-1.5 py-0.5 rounded border border-sky-500/20">
+                        <span className="mitre-technique-id font-mono text-xs bg-sky-950/40 px-1.5 py-0.5 rounded border border-sky-500/20">
                           {m.techniqueId}
                         </span>
-                        <span className="text-xs text-slate-200 font-medium truncate">{m.techniqueName}</span>
+                        <span className="text-xs text-slate-200 font-medium">{m.techniqueName}</span>
                         <span className="text-[11px] text-slate-500">in {m.tacticName}</span>
                       </div>
                       <ArrowRight className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
@@ -222,7 +224,7 @@ export const SearchModal = ({ isOpen, onClose }) => {
         </div>
 
         {/* Footer info */}
-        <div className="px-4 py-2 bg-[#090d16] border-t border-slate-800 text-[11px] text-slate-500 flex justify-between items-center font-mono">
+        <div className="px-4 py-2 bg-background border-t border-slate-800 text-[11px] text-slate-500 flex justify-between items-center font-mono">
           <span>Navigate with <kbd className="text-slate-400 bg-slate-800 px-1 rounded">↑</kbd> <kbd className="text-slate-400 bg-slate-800 px-1 rounded">↓</kbd></span>
           <span>Select with <kbd className="text-slate-400 bg-slate-800 px-1 rounded">Enter</kbd></span>
         </div>

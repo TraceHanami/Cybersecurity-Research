@@ -6,16 +6,7 @@ import { SearchModal } from '../common/SearchModal';
 export const Navbar = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   // Global keyboard shortcut for search (⌘K or Ctrl+K or /)
   useEffect(() => {
@@ -47,23 +38,15 @@ export const Navbar = () => {
 
   return (
     <>
-      <header 
-        className={`sticky top-0 z-40 w-full transition-all duration-200 ${
-          scrolled 
-            ? 'bg-[#090d16]/90 backdrop-blur-md border-b border-slate-800/80 shadow-lg shadow-black/40' 
-            : 'bg-[#090d16]/60 backdrop-blur-sm border-b border-white/[0.05]'
-        }`}
-      >
+      <header className="sticky top-0 z-40 w-full bg-background border-b border-white/[0.08]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             
             {/* Logo / Brand */}
             <Link to="/" className="flex items-center gap-3 group focus:outline-none">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-sky-500/20 to-purple-500/20 border border-sky-500/30 flex items-center justify-center group-hover:border-sky-400/60 transition-colors shadow-sm">
-                <span className="font-mono text-xs font-bold text-sky-400 group-hover:text-sky-300">TH</span>
-              </div>
+              <span className="w-8 h-8 border border-white/10 flex items-center justify-center font-mono text-xs font-bold text-sky-400">TH</span>
               <div className="flex flex-col">
-                <span className="font-semibold text-sm sm:text-base tracking-tight text-slate-100 group-hover:text-white transition-colors">
+                <span className="font-semibold text-sm sm:text-base tracking-tight text-slate-100 group-hover:text-sky-400 transition-colors">
                   TraceHanami <span className="text-sky-400 font-mono text-xs font-normal ml-0.5">/research</span>
                 </span>
                 <span className="text-[10px] text-slate-500 font-mono hidden sm:inline-block -mt-1 tracking-wider uppercase">
@@ -73,17 +56,17 @@ export const Navbar = () => {
             </Link>
 
             {/* Desktop Navigation Links */}
-            <nav className="hidden md:flex items-center gap-1">
+            <nav className="hidden md:flex items-center gap-5">
               {navLinks.map((link) => {
                 const isActive = location.pathname === link.path || (link.path !== '/' && location.pathname.startsWith(link.path));
                 return (
                   <Link
                     key={link.name}
                     to={link.path}
-                    className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                    className={`py-1.5 text-xs font-medium border-b ${
                       isActive
-                        ? 'text-sky-300 bg-sky-500/10 border border-sky-500/20 shadow-sm'
-                        : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 border border-transparent'
+                        ? 'text-sky-400 border-sky-400'
+                        : 'text-slate-400 hover:text-sky-400 border-transparent'
                     }`}
                   >
                     {link.name}
@@ -97,7 +80,7 @@ export const Navbar = () => {
               {/* Quick Search Button */}
               <button
                 onClick={() => setIsSearchOpen(true)}
-                className="flex items-center gap-2 px-2.5 py-1.5 text-xs text-slate-400 bg-slate-900/90 hover:bg-slate-800 hover:text-slate-200 rounded-lg border border-slate-800 hover:border-slate-700 transition-all font-sans"
+                className="flex items-center gap-2 px-2.5 py-1.5 text-xs text-slate-400 hover:text-sky-400 rounded border border-transparent font-sans"
                 title="Search research and detections (⌘K)"
               >
                 <Search className="w-3.5 h-3.5 text-sky-400" />
@@ -155,7 +138,7 @@ export const Navbar = () => {
 
         {/* Mobile Navigation Drawer */}
         {isMobileMenuOpen && (
-          <div className="md:hidden border-b border-slate-800 bg-[#0e1424] px-4 pt-2 pb-4 space-y-1 animate-fadeIn">
+          <div className="md:hidden border-b border-slate-800 bg-background-secondary px-4 pt-2 pb-4 space-y-1 animate-fadeIn">
             {navLinks.map((link) => {
               const isActive = location.pathname === link.path;
               return (

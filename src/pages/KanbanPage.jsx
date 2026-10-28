@@ -1,9 +1,11 @@
 import React from 'react';
-import { kanbanData } from '../data/kanbanData';
+import { getCuratedKanbanData } from '../data/curation';
 import { Kanban, CheckCircle, Clock, ArrowRight, Shield } from '../components/common/Icons';
 import { Link } from 'react-router-dom';
 
 export const KanbanPage = () => {
+  const kanbanData = getCuratedKanbanData();
+  if (Object.values(kanbanData).every(items => items.length === 0)) return null;
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       
@@ -25,12 +27,12 @@ export const KanbanPage = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         
         {/* Column 1: Researching */}
-        <div className="flex flex-col rounded-2xl bg-[#0b101d] border border-sky-500/20 p-6 shadow-xl">
+        <div className="flex flex-col rounded-2xl bg-background-code border border-sky-500/20 p-6 shadow-xl">
           <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-800">
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-sky-400 animate-pulse"></span>
               <h2 className="font-semibold text-sm text-sky-300 uppercase tracking-wider font-mono">
-                1. Lab Researching ({kanbanData.researching.length})
+                1. Lab Researching
               </h2>
             </div>
             <span className="text-xs font-mono text-slate-500">Telemetry Ingestion</span>
@@ -40,7 +42,7 @@ export const KanbanPage = () => {
             {kanbanData.researching.map((item) => (
               <div
                 key={item.id}
-                className="p-5 rounded-xl bg-[#0f172a]/90 border border-slate-800/80 hover:border-sky-500/40 transition-colors shadow-sm"
+                className="p-5 rounded-xl bg-background-code/90 border border-slate-800/80 hover:border-sky-500/40 transition-colors shadow-sm"
               >
                 <div className="flex items-center justify-between gap-2 mb-2">
                   <span className="text-[10px] font-mono text-sky-400 bg-sky-950/50 px-2 py-0.5 rounded border border-sky-500/30">
@@ -83,12 +85,12 @@ export const KanbanPage = () => {
         </div>
 
         {/* Column 2: Writing & Peer Review */}
-        <div className="flex flex-col rounded-2xl bg-[#0b101d] border border-purple-500/20 p-6 shadow-xl">
+        <div className="flex flex-col rounded-2xl bg-background-code border border-purple-500/20 p-6 shadow-xl">
           <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-800">
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-purple-400"></span>
               <h2 className="font-semibold text-sm text-purple-300 uppercase tracking-wider font-mono">
-                2. Writing & Rule Testing ({kanbanData.writing.length})
+                2. Writing & Rule Testing
               </h2>
             </div>
             <span className="text-xs font-mono text-slate-500">Drafting</span>
@@ -98,7 +100,7 @@ export const KanbanPage = () => {
             {kanbanData.writing.map((item) => (
               <div
                 key={item.id}
-                className="p-5 rounded-xl bg-[#0f172a]/90 border border-slate-800/80 hover:border-purple-500/40 transition-colors shadow-sm"
+                className="p-5 rounded-xl bg-background-code/90 border border-slate-800/80 hover:border-purple-500/40 transition-colors shadow-sm"
               >
                 <div className="flex items-center justify-between gap-2 mb-2">
                   <span className="text-[10px] font-mono text-purple-400 bg-purple-950/50 px-2 py-0.5 rounded border border-purple-500/30">
@@ -141,12 +143,12 @@ export const KanbanPage = () => {
         </div>
 
         {/* Column 3: Published */}
-        <div className="flex flex-col rounded-2xl bg-[#0b101d] border border-emerald-500/20 p-6 shadow-xl">
+        <div className="flex flex-col rounded-2xl bg-background-code border border-emerald-500/20 p-6 shadow-xl">
           <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-800">
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
               <h2 className="font-semibold text-sm text-emerald-300 uppercase tracking-wider font-mono">
-                3. Published Publications ({kanbanData.published.length})
+                3. Published Publications
               </h2>
             </div>
             <span className="text-xs font-mono text-slate-500">Live Reports</span>
@@ -157,7 +159,7 @@ export const KanbanPage = () => {
               <Link
                 key={item.id}
                 to={`/research/${item.slug}`}
-                className="block p-5 rounded-xl bg-[#0f172a]/90 border border-slate-800/80 hover:border-emerald-500/50 transition-all hover:-translate-y-0.5 group shadow-sm"
+                className="block p-5 rounded-xl bg-background-code/90 border border-slate-800/80 hover:border-emerald-500/50 transition-all hover:-translate-y-0.5 group shadow-sm"
               >
                 <div className="flex items-center justify-between gap-2 mb-2">
                   <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/50 px-2 py-0.5 rounded border border-emerald-500/30 flex items-center gap-1">

@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { mitreTactics } from '../../data/mitreData';
+import { getCuratedMitreTactics } from '../../data/curation';
 import { Crosshair, ArrowRight, Shield, Check, Layers } from '../common/Icons';
 
 export const MitreCoveragePreview = () => {
-  const [activeTactic, setActiveTactic] = useState(mitreTactics[5]); // Default Credential Access
+  const mitreTactics = getCuratedMitreTactics();
+  const [activeTactic, setActiveTactic] = useState(mitreTactics[5] || mitreTactics[0]); // Default Credential Access
+
+  if (mitreTactics.length === 0) return null;
 
   return (
-    <section className="py-20 bg-[#090d16] border-b border-slate-800/60">
+    <section className="py-20 bg-background border-b border-slate-800/60">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
@@ -41,37 +44,41 @@ export const MitreCoveragePreview = () => {
                 className={`p-3.5 rounded-xl text-left transition-all border font-mono ${
                   isSelected
                     ? 'bg-sky-500/15 border-sky-400/60 shadow-lg shadow-sky-500/10'
-                    : 'bg-[#0e1424]/80 border-slate-800/80 hover:border-slate-700 hover:bg-slate-800/40'
+                    : 'bg-background-secondary/80 border-slate-800/80 hover:border-slate-700 hover:bg-slate-800/40'
                 }`}
               >
                 <div className="flex items-center justify-between text-[10px] text-slate-500 mb-1">
                   <span>{tactic.id}</span>
-                  <span className={`font-semibold ${isSelected ? 'text-sky-400' : 'text-slate-400'}`}>
-                    {tactic.coveragePercent}%
-                  </span>
+                  {tactic.coveragePercent !== undefined && (
+                    <span className={`font-semibold ${isSelected ? 'text-sky-400' : 'text-slate-400'}`}>
+                      {tactic.coveragePercent}%
+                    </span>
+                  )}
                 </div>
-                <div className={`text-xs font-semibold truncate ${isSelected ? 'text-white' : 'text-slate-300'}`}>
+                <div className={`text-xs font-semibold ${isSelected ? 'text-white' : 'text-slate-300'}`}>
                   {tactic.name}
                 </div>
-                <div className="text-[10px] text-slate-500 mt-1">
-                  {tactic.techniquesCount} techniques
-                </div>
+                {tactic.techniquesCount !== undefined && (
+                  <div className="text-[10px] text-slate-500 mt-1">{tactic.techniquesCount} techniques</div>
+                )}
               </button>
             );
           })}
         </div>
 
         {/* Selected Tactic Breakdown Panel */}
-        <div className="p-6 sm:p-8 rounded-2xl bg-[#0b101c] border border-sky-500/30 shadow-2xl relative overflow-hidden">
+        <div className="p-6 sm:p-8 rounded-2xl bg-background-code border border-sky-500/30 shadow-2xl relative overflow-hidden">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-slate-800/80">
             <div>
               <div className="flex items-center gap-2 mb-1.5">
                 <span className="font-mono text-xs text-sky-400 bg-sky-950/50 px-2 py-0.5 rounded border border-sky-500/30">
                   {activeTactic.id}
                 </span>
-                <span className="font-mono text-xs text-purple-400 bg-purple-950/50 px-2 py-0.5 rounded border border-purple-500/30">
-                  {activeTactic.coveragePercent}% Defensive Coverage
-                </span>
+                {activeTactic.coveragePercent !== undefined && (
+                  <span className="font-mono text-xs text-purple-400 bg-purple-950/50 px-2 py-0.5 rounded border border-purple-500/30">
+                    {activeTactic.coveragePercent}% Defensive Coverage
+                  </span>
+                )}
               </div>
               <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">
                 {activeTactic.name} Tactic Breakdown
@@ -95,10 +102,10 @@ export const MitreCoveragePreview = () => {
             {activeTactic.techniques.map((tech) => (
               <div
                 key={tech.id}
-                className="p-4 rounded-xl bg-[#0f172a]/90 border border-slate-800/90 hover:border-sky-500/40 transition-colors"
+                className="p-4 rounded-xl bg-background-code/90 border border-slate-800/90 hover:border-sky-500/40 transition-colors"
               >
                 <div className="flex items-center justify-between gap-2 mb-2">
-                  <span className="text-xs font-mono font-bold text-sky-400">
+                  <span className="mitre-technique-id text-xs font-mono font-bold">
                     {tech.id}
                   </span>
                   <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-500/20">
@@ -114,7 +121,7 @@ export const MitreCoveragePreview = () => {
                   {tech.subtechniques.map((sub, i) => (
                     <div key={i} className="text-[11px] font-mono text-slate-400 flex items-center gap-1.5">
                       <span className="text-slate-600">↳</span>
-                      <span className="truncate">{sub}</span>
+                      <span>{sub}</span>
                     </div>
                   ))}
                 </div>

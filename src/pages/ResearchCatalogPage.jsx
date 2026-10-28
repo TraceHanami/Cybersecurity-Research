@@ -1,10 +1,11 @@
 import React, { useState, useMemo } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
-import { researchArticles } from '../data/researchData';
+import { getCuratedArticles } from '../data/curation';
 import { Badge } from '../components/common/Badge';
 import { Search, Filter, Clock, Calendar, ArrowRight, Shield, FileText, X, Crosshair } from '../components/common/Icons';
 
 export const ResearchCatalogPage = () => {
+  const researchArticles = getCuratedArticles();
   const [searchParams, setSearchParams] = useSearchParams();
   const activeCategory = searchParams.get('category') || 'All';
   const activeTag = searchParams.get('tag') || '';
@@ -12,12 +13,15 @@ export const ResearchCatalogPage = () => {
   const [selectedSubCategory, setSelectedSubCategory] = useState('All');
 
   // Categories list
-  const categories = ['All', 'Blue Team', 'Red Team', 'Purple Team', 'Threat Intelligence'];
+  const categories = ['All', ...new Set(researchArticles.map(article => article.category))];
+  const getSummary = (article) => article.executiveSummary
+    || article.sections?.find(section => section.id === 'summary')?.paragraphs?.join('\n\n')
+    || '';
 
   // All unique tags
   const allTags = useMemo(() => {
     const set = new Set();
-    researchArticles.forEach(a => a.tags.forEach(t => set.add(t)));
+    researchArticles.forEach(a => (a.tags || []).forEach(t => set.add(t)));
     return Array.from(set);
   }, []);
 
@@ -35,7 +39,7 @@ export const ResearchCatalogPage = () => {
       }
 
       // Tag filter
-      if (activeTag && !art.tags.includes(activeTag)) {
+      if (activeTag && !(art.tags || []).includes(activeTag)) {
         return false;
       }
 
@@ -43,10 +47,10 @@ export const ResearchCatalogPage = () => {
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
         const matchTitle = art.title.toLowerCase().includes(q);
-        const matchSub = art.subtitle.toLowerCase().includes(q);
-        const matchSummary = art.executiveSummary.toLowerCase().includes(q);
-        const matchTags = art.tags.some(t => t.toLowerCase().includes(q));
-        const matchMitre = art.mitreTags.some(m => m.id.toLowerCase().includes(q) || m.name.toLowerCase().includes(q));
+        const matchSub = (art.subtitle || '').toLowerCase().includes(q);
+        const matchSummary = getSummary(art).toLowerCase().includes(q);
+        const matchTags = (art.tags || []).some(t => t.toLowerCase().includes(q));
+        const matchMitre = (art.mitreTags || []).some(m => m.id.toLowerCase().includes(q) || m.name.toLowerCase().includes(q));
 
         if (!matchTitle && !matchSub && !matchSummary && !matchTags && !matchMitre) {
           return false;
@@ -154,7 +158,7 @@ export const ResearchCatalogPage = () => {
           <span className="text-[11px] font-mono text-slate-500 flex items-center gap-1 mr-1">
             <Filter className="w-3 h-3" /> Tags:
           </span>
-          {allTags.slice(0, 10).map((tag) => {
+          {allTags.map((tag) => {
             const isSelected = activeTag === tag;
             return (
               <button
@@ -184,7 +188,6 @@ export const ResearchCatalogPage = () => {
 
       {/* Results Header */}
       <div className="flex items-center justify-between text-xs font-mono text-slate-400 mb-6 pb-2 border-b border-slate-800/50">
-        <span>Showing {filteredArticles.length} of {researchArticles.length} research publications</span>
         <span>Sorted by: Most Recent</span>
       </div>
 
@@ -200,7 +203,7 @@ export const ResearchCatalogPage = () => {
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="max-w-4xl divide-y divide-slate-800 border-y border-slate-800">
           {filteredArticles.map((art) => {
             const categoryVariant = 
               art.category === 'Blue Team' ? 'blue' :
@@ -210,7 +213,7 @@ export const ResearchCatalogPage = () => {
             return (
               <article
                 key={art.id}
-                className="flex flex-col justify-between p-6 rounded-2xl bg-[#0e1424]/90 border border-slate-800/90 hover:border-sky-500/40 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group"
+                className="flex flex-col justify-between py-7 group"
               >
                 <div>
                   {/* Category & Meta */}
@@ -225,14 +228,8 @@ export const ResearchCatalogPage = () => {
                     </div>
 
                     <div className="flex items-center gap-3 text-xs font-mono text-slate-400">
-                      <span className="flex items-center gap-1">
-                        <Clock className="w-3.5 h-3.5 text-slate-400" />
-                        {art.readTime}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Calendar className="w-3.5 h-3.5 text-slate-400" />
-                        {art.date}
-                      </span>
+                      {art.readTime && <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" />{art.readTime}</span>}
+                      {art.date && <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5" />{art.date}</span>}
                     </div>
                   </div>
 
@@ -244,25 +241,25 @@ export const ResearchCatalogPage = () => {
                   </h2>
 
                   {/* Subtitle / summary */}
-                  <p className="text-xs text-slate-300 leading-relaxed line-clamp-3 mb-4">
-                    {art.subtitle || art.executiveSummary}
+                  <p className="text-xs text-slate-300 leading-relaxed mb-4">
+                    {art.subtitle || getSummary(art)}
                   </p>
                 </div>
 
                 <div>
                   {/* MITRE Badges */}
-                  <div className="pt-3 border-t border-slate-800/80 mb-4">
+                  {(art.mitreTags || []).length > 0 && <div className="pt-3 border-t border-slate-800/80 mb-4">
                     <div className="flex flex-wrap gap-1.5">
-                      {art.mitreTags.map((m) => (
+                      {(art.mitreTags || []).map((m) => (
                         <span
                           key={m.id}
                           className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono bg-sky-950/40 text-sky-300 border border-sky-500/20"
                         >
-                          <span className="font-semibold">{m.id}</span>
+                          <span className="mitre-technique-id font-semibold">{m.id}</span>
                         </span>
                       ))}
                     </div>
-                  </div>
+                  </div>}
 
                   {/* Link CTA */}
                   <Link

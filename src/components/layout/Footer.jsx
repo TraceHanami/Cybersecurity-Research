@@ -4,14 +4,14 @@ import { Shield, Github, Linkedin, Rss, Terminal, ExternalLink } from '../common
 
 export const Footer = () => {
   return (
-    <footer className="w-full border-t border-slate-800/80 bg-[#070a11] text-slate-400 text-xs mt-24">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+    <footer className="w-full border-t border-white/[0.08] bg-background text-slate-400 text-xs mt-24">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
           
           {/* Brand Col */}
           <div className="md:col-span-1 space-y-3">
             <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded bg-sky-500/20 border border-sky-500/30 flex items-center justify-center">
+              <div className="w-6 h-6 border border-white/10 flex items-center justify-center">
                 <span className="font-mono text-[10px] font-bold text-sky-400">TH</span>
               </div>
               <span className="font-semibold text-slate-200 tracking-tight text-sm">TraceHanami Research</span>
@@ -48,9 +48,7 @@ export const Footer = () => {
           <div>
             <h4 className="font-mono text-xs font-semibold text-slate-200 uppercase tracking-wider mb-3">Domains</h4>
             <ul className="space-y-2">
-              <li><Link to="/research?category=Blue+Team" className="hover:text-sky-400 transition-colors">🔵 Blue Team & Detection</Link></li>
               <li><Link to="/research?category=Red+Team" className="hover:text-rose-400 transition-colors">🔴 Red Team & Emulation</Link></li>
-              <li><Link to="/research?category=Purple+Team" className="hover:text-purple-400 transition-colors">🟣 Purple Team Validation</Link></li>
               <li><Link to="/research?category=Threat+Intelligence" className="hover:text-cyan-400 transition-colors">🌐 Threat Intelligence & Malware</Link></li>
             </ul>
           </div>
@@ -61,7 +59,7 @@ export const Footer = () => {
             <p className="text-slate-400 text-xs leading-relaxed mb-2">
               All offensive simulations were conducted within authorized, isolated laboratory networks.
             </p>
-            <div className="p-2.5 rounded bg-slate-900/80 border border-slate-800 font-mono text-[10px] text-slate-400 break-all">
+            <div className="p-2.5 border border-white/10 font-mono text-[10px] text-slate-400 break-all">
               <span className="text-slate-500 block mb-0.5">PGP Fingerprint:</span>
               <span className="text-sky-400">9E7A 3B1F 8C2D 4E6A 1192 8847 C3F0</span>
             </div>
@@ -70,13 +68,8 @@ export const Footer = () => {
         </div>
 
         <div className="pt-8 border-t border-slate-800/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-slate-500 font-mono">
-          <div>
-            © {new Date().getFullYear()} TraceHanami Research. All rights reserved.
-          </div>
           <div className="flex items-center gap-4">
             <Link to="/rss" className="hover:text-slate-300">RSS Feed</Link>
-            <span>•</span>
-            <Link to="/about#certifications" className="hover:text-slate-300">Verified Certifications</Link>
             <span>•</span>
             <span>MITRE ATT&CK® v14 Mapped</span>
           </div>

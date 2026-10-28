@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { researchArticles } from '../data/researchData';
-import { Badge } from '../components/common/Badge';
+import { getCuratedArticleBySlug } from '../data/curation';
 import { CodeBlock } from '../components/common/CodeBlock';
 import { ReadingProgressBar } from '../components/layout/ReadingProgressBar';
 import { 
@@ -10,6 +9,99 @@ import {
   Terminal, AlertCircle, FileText, CheckCircle 
 } from '../components/common/Icons';
 
+const AdvisoryArticleView = ({ article, activeSection }) => {
+  const metadata = [
+    ['Advisory ID', article.advisoryId],
+    ['Package', article.packageName],
+    ['Affected', article.affected],
+    ['Patched', article.patched],
+    ['Severity', article.severity],
+    ['CVE', article.cve],
+    ['CWE', article.weaknesses],
+    ['Credit', article.credit],
+    ['Dates', article.dates],
+  ].filter(([, value]) => value);
+
+  return (
+    <>
+      <ReadingProgressBar />
+      <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
+        <div className="mb-8 border-b border-border-subtle pb-4 no-print">
+          <Link to="/research" className="text-sm text-text-secondary hover:underline">
+            <ArrowLeft className="mr-1 inline h-4 w-4" />
+            Back to Research Catalog
+          </Link>
+        </div>
+
+        <header className="mx-auto mb-12 max-w-[68ch]">
+          <p className="mb-4 text-sm text-text-secondary">{article.headerNote}</p>
+          <h1 className="mb-6 text-3xl font-semibold leading-tight tracking-tight text-text-primary sm:text-5xl">
+            {article.title}
+          </h1>
+          <dl className="grid grid-cols-1 gap-x-8 gap-y-4 border-y border-border-subtle py-5 sm:grid-cols-2">
+            {metadata.map(([label, value]) => (
+              <div key={label}>
+                <dt className="mb-1 font-mono text-[11px] uppercase tracking-wider text-text-secondary">
+                  {label}
+                </dt>
+                <dd className="text-sm leading-relaxed text-text-primary">
+                  {Array.isArray(value) ? value.map((entry, index) => (
+                    <span className="block" key={`${label}-${index}`}>
+                      {label === 'CWE' ? <code className="cwe-reference">{entry}</code> : entry}
+                    </span>
+                  )) : label === 'CVE' ? <code className="cve-reference">{value}</code> : value}
+                </dd>
+              </div>
+            ))}
+          </dl>
+          <div className="mt-5 flex flex-wrap gap-x-4 gap-y-2 text-sm">
+            {article.tags.map(tag => (
+              <Link key={tag} to={`/research?tag=${encodeURIComponent(tag)}`} className="hover:underline">
+                {tag}
+              </Link>
+            ))}
+          </div>
+        </header>
+
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
+          <aside className="hidden lg:col-span-3 lg:block no-print">
+            <nav className="sticky top-24 space-y-2 text-sm">
+              {article.sections.map(section => (
+                <a
+                  key={section.id}
+                  href={`#${section.id}`}
+                  className={`block border-l py-1 pl-3 ${activeSection === section.id ? 'border-accent-green text-accent-green' : 'border-border-subtle text-text-secondary hover:underline'}`}
+                >
+                  {section.title}
+                </a>
+              ))}
+            </nav>
+          </aside>
+          <article className="min-w-0 space-y-12 text-text-primary lg:col-span-9">
+            {article.sections.map(section => (
+              <section id={section.id} key={section.id} className="scroll-mt-24">
+                <h2 className="mb-4 border-b border-border-subtle pb-3 text-2xl font-semibold tracking-tight sm:text-3xl">
+                  {section.title}
+                </h2>
+                {section.paragraphs?.map((paragraph, index) => (
+                  <p key={index} className="mb-4 max-w-[68ch] whitespace-pre-line text-[17px] leading-[1.75] text-text-primary">
+                    {paragraph}
+                  </p>
+                ))}
+                {section.items && (
+                  <ol className="max-w-[68ch] list-none space-y-4 text-[17px] leading-[1.75] text-text-primary">
+                    {section.items.map((item, index) => <li key={index}>{item}</li>)}
+                  </ol>
+                )}
+              </section>
+            ))}
+          </article>
+        </div>
+      </div>
+    </>
+  );
+};
+
 export const ResearchArticlePage = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
@@ -17,11 +109,7 @@ export const ResearchArticlePage = () => {
   const [copiedUrl, setCopiedUrl] = useState(false);
   const [activeSiemTab, setActiveSiemTab] = useState('splunk');
 
-  const article = researchArticles.find(a => a.slug === slug) || researchArticles[0];
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [slug]);
+  const article = getCuratedArticleBySlug(slug);
 
   // Scrollspy for table of contents
   useEffect(() => {
@@ -68,10 +156,9 @@ export const ResearchArticlePage = () => {
     );
   }
 
-  const categoryVariant = 
-    article.category === 'Blue Team' ? 'blue' :
-    article.category === 'Red Team' ? 'red' :
-    article.category === 'Purple Team' ? 'purple' : 'cyan';
+  if (article.type === 'advisory') {
+    return <AdvisoryArticleView article={article} activeSection={activeSection} />;
+  }
 
   // Table of Contents items
   const tocItems = [
@@ -91,7 +178,7 @@ export const ResearchArticlePage = () => {
     <>
       <ReadingProgressBar />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         
         {/* Back Link & Action Tools */}
         <div className="flex items-center justify-between gap-4 mb-8 pb-4 border-b border-slate-800/80 no-print">
@@ -128,37 +215,23 @@ export const ResearchArticlePage = () => {
         <header className="mb-12">
           
           {/* Metadata badges */}
-          <div className="flex flex-wrap items-center gap-2.5 mb-4">
-            <Badge variant={categoryVariant} size="sm">
-              {article.category}
-            </Badge>
-            <span className="text-xs font-mono text-slate-400">
-              {article.subCategory}
-            </span>
-            <span className="text-slate-600">•</span>
-            <div className="flex items-center gap-1.5 text-xs font-mono text-slate-400">
-              <Clock className="w-3.5 h-3.5 text-slate-400" />
-              <span>{article.readTime}</span>
-            </div>
-            <span className="text-slate-600">•</span>
-            <div className="flex items-center gap-1.5 text-xs font-mono text-slate-400">
-              <Calendar className="w-3.5 h-3.5 text-slate-400" />
-              <span>Published {article.date}</span>
-            </div>
-          </div>
+          <dl className="grid grid-cols-2 sm:grid-cols-4 gap-x-5 gap-y-3 mb-6 max-w-3xl">
+            <div><dt className="text-xs text-slate-300">{article.category}</dt><dd className="mt-1 text-xs text-slate-500">{article.subCategory}</dd></div>
+            <div><dt className="text-xs text-slate-300">{article.readTime}</dt><dd className="mt-1 text-xs text-slate-500">Published {article.date}</dd></div>
+          </dl>
 
           {/* Title */}
-          <h1 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-[1.15] mb-4 font-display">
+          <h1 className="text-3xl sm:text-5xl font-bold text-slate-100 tracking-tight leading-[1.12] mb-4 font-sans max-w-4xl">
             {article.title}
           </h1>
 
           {/* Subtitle */}
-          <p className="text-base sm:text-lg text-slate-300 font-normal leading-relaxed max-w-4xl mb-6">
+          <p className="text-base sm:text-lg text-slate-300 font-normal leading-relaxed max-w-[68ch] mb-6">
             {article.subtitle}
           </p>
 
           {/* Author info pill */}
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-[#0e1424] border border-slate-800/80 max-w-md">
+          <div className="flex items-center gap-3 py-3 border-y border-white/10 max-w-md">
             <div className="w-9 h-9 rounded-lg bg-sky-500/20 border border-sky-500/30 flex items-center justify-center font-mono font-bold text-xs text-sky-400">
               {article.author.avatar}
             </div>
@@ -175,7 +248,7 @@ export const ResearchArticlePage = () => {
           
           {/* Sticky Table of Contents Sidebar */}
           <aside className="hidden lg:block lg:col-span-3 no-print">
-            <div className="sticky top-24 p-5 rounded-xl bg-[#0b101d] border border-slate-800/90 shadow-xl">
+            <div className="sticky top-24 py-2">
               <div className="text-xs font-mono font-semibold uppercase tracking-wider text-slate-400 mb-4 flex items-center gap-2">
                 <FileText className="w-3.5 h-3.5 text-sky-400" />
                 Report Structure
@@ -187,10 +260,10 @@ export const ResearchArticlePage = () => {
                     <a
                       key={item.id}
                       href={`#${item.id}`}
-                      className={`block py-1.5 px-2.5 rounded transition-all font-medium ${
+                      className={`block py-1.5 pl-3 border-l font-medium ${
                         isActive
-                          ? 'bg-sky-500/15 text-sky-300 border-l-2 border-sky-400 font-semibold'
-                          : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                          ? 'text-sky-400 border-sky-400 font-semibold'
+                          : 'text-slate-400 border-white/10 hover:text-sky-400'
                       }`}
                     >
                       {item.label}
@@ -220,15 +293,15 @@ export const ResearchArticlePage = () => {
           </aside>
 
           {/* Main Threat Report Content Body */}
-          <main className="lg:col-span-9 space-y-12 text-slate-200">
+          <article className="lg:col-span-9 space-y-12 text-slate-200 min-w-0">
             
             {/* Section 1: Executive Summary */}
-            <section id="executive-summary" className="p-7 rounded-2xl bg-[#0e1424] border border-sky-500/20 shadow-xl">
+            <section id="executive-summary" className="py-5 border-y border-white/10">
               <div className="flex items-center gap-2 text-sky-400 font-mono text-xs font-semibold uppercase tracking-wider mb-3">
                 <Shield className="w-4 h-4" />
                 Executive Summary
               </div>
-              <p className="text-sm sm:text-base leading-relaxed text-slate-200">
+              <p className="text-base sm:text-lg leading-relaxed text-slate-200">
                 {article.executiveSummary}
               </p>
             </section>
@@ -248,7 +321,7 @@ export const ResearchArticlePage = () => {
             </section>
 
             {/* Section 3: Lab Environment & Telemetry */}
-            <section id="lab-environment" className="space-y-4 p-6 rounded-2xl bg-[#0a0f1d] border border-slate-800/90">
+            <section id="lab-environment" className="space-y-4 py-5 border-y border-white/10">
               <div className="flex items-center justify-between gap-2 border-b border-slate-800 pb-3">
                 <div className="flex items-center gap-2">
                   <Server className="w-4 h-4 text-emerald-400" />
@@ -262,7 +335,7 @@ export const ResearchArticlePage = () => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                <div className="p-4 rounded-xl bg-[#0e1424] border border-slate-800">
+                <div className="p-4 border border-white/10">
                   <span className="font-mono text-slate-400 uppercase tracking-wider block mb-2 font-semibold">
                     Infrastructure Range
                   </span>
@@ -271,7 +344,7 @@ export const ResearchArticlePage = () => {
                   </p>
                 </div>
 
-                <div className="p-4 rounded-xl bg-[#0e1424] border border-slate-800">
+                <div className="p-4 border border-white/10">
                   <span className="font-mono text-slate-400 uppercase tracking-wider block mb-2 font-semibold">
                     Telemetry Ingestion Providers
                   </span>
@@ -319,7 +392,6 @@ export const ResearchArticlePage = () => {
               <CodeBlock 
                 code={article.sigmaRule} 
                 language="yaml" 
-                title={`${article.slug}.yml`} 
               />
             </section>
 
@@ -343,7 +415,6 @@ export const ResearchArticlePage = () => {
                 <CodeBlock 
                   code={article.yaraRule} 
                   language="c" 
-                  title={`${article.slug}.yar`} 
                 />
               </section>
             )}
@@ -400,7 +471,7 @@ export const ResearchArticlePage = () => {
             )}
 
             {/* Section 8: MITRE ATT&CK Mapping */}
-            <section id="mitre-mapping-section" className="space-y-4 p-6 rounded-2xl bg-[#0e1424] border border-slate-800">
+            <section id="mitre-mapping-section" className="space-y-4 py-5 border-y border-white/10">
               <div className="flex items-center gap-2">
                 <Crosshair className="w-5 h-5 text-purple-400" />
                 <h2 className="text-xl font-bold text-white">
@@ -411,10 +482,10 @@ export const ResearchArticlePage = () => {
                 {article.mitreTags.map((m) => (
                   <div
                     key={m.id}
-                    className="p-3 rounded-lg bg-slate-900/90 border border-slate-800 flex items-center justify-between"
+                    className="py-3 border-b border-white/10 flex items-center justify-between gap-3"
                   >
                     <div className="flex items-center gap-2.5">
-                      <span className="text-xs font-mono font-bold text-sky-400 bg-sky-950/60 px-2 py-0.5 rounded border border-sky-500/30">
+                      <span className="mitre-technique-id text-xs font-mono font-bold bg-sky-950/60 px-2 py-0.5 rounded border border-sky-500/30">
                         {m.id}
                       </span>
                       <span className="text-xs font-medium text-slate-200">
@@ -444,7 +515,7 @@ export const ResearchArticlePage = () => {
             </section>
 
             {/* Section 10: References & Indicators */}
-            <section id="references-section" className="space-y-4 p-6 rounded-2xl bg-[#090d16] border border-slate-800/80">
+            <section id="references-section" className="space-y-4 py-5 border-y border-white/10">
               <h2 className="text-lg font-bold text-white tracking-tight">
                 10. References & Hash Indicators
               </h2>
@@ -455,7 +526,7 @@ export const ResearchArticlePage = () => {
               </div>
             </section>
 
-          </main>
+          </article>
 
         </div>
 
